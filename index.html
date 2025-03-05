@@ -3,107 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERROR CRÍTICO</title>
+    <title>Juego de la Contraseña</title>
     <style>
         body {
-            background: black;
-            color: red;
             font-family: Arial, sans-serif;
             text-align: center;
-            margin-top: 100px;
-            user-select: none;
+            margin: 50px;
         }
-
-        #virus-screen {
-            background: #222;
-            padding: 30px;
-            border: 3px solid red;
-            width: 50%;
-            margin: auto;
-            box-shadow: 0 0 10px red;
-        }
-
-        h1 {
-            font-size: 2em;
-        }
-
-        p {
-            font-size: 1.2em;
-        }
-
-        button {
+        input {
             padding: 10px;
-            font-size: 1.2em;
-            background: red;
-            color: white;
-            border: none;
-            cursor: pointer;
+            font-size: 16px;
         }
-
-        button:hover {
-            background: darkred;
+        .rules {
+            text-align: left;
+            max-width: 500px;
+            margin: auto;
+        }
+        .rule {
+            color: red;
+        }
+        .valid {
+            color: green;
         }
     </style>
 </head>
 <body>
-    <div id="virus-screen">
-        <h1>⚠ ERROR CRÍTICO DEL SISTEMA ⚠</h1>
-        <p>El sistema ha detectado una actividad sospechosa.</p>
-        <p>Archivos del sistema comprometidos...</p>
-        <p id="countdown">Apagado en: 10</p>
-        <button id="fix-btn">Intentar reparar</button>
-    </div>
-
-    <audio id="error-sound">
-        <source src="https://www.fesliyanstudios.com/play-mp3/404" type="audio/mpeg">
-    </audio>
-    <audio id="shutdown-sound">
-        <source src="https://www.fesliyanstudios.com/play-mp3/216" type="audio/mpeg">
-    </audio>
+    <h1>El Juego de la Contraseña</h1>
+    <p>Introduce una contraseña que cumpla con las reglas absurdas.</p>
+    <input type="text" id="password" placeholder="Escribe tu contraseña">
+    <div class="rules" id="rules"></div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const errorSound = document.getElementById("error-sound");
-            const shutdownSound = document.getElementById("shutdown-sound");
-            const countdownElement = document.getElementById("countdown");
-            const fixButton = document.getElementById("fix-btn");
+        const passwordInput = document.getElementById("password");
+        const rulesContainer = document.getElementById("rules");
 
-            let count = 10;
-            errorSound.play();
+        const rules = [
+            { text: "Debe tener al menos 8 caracteres.", check: (pw) => pw.length >= 8 },
+            { text: "Debe contener un número.", check: (pw) => /\d/.test(pw) },
+            { text: "Debe incluir un emoji.", check: (pw) => /\p{Extended_Pictographic}/u.test(pw) },
+            { text: "Debe comenzar con la letra 'A'.", check: (pw) => pw.startsWith('A') },
+            { text: "Debe incluir el nombre de un planeta.", check: (pw) => /(Mercurio|Venus|Tierra|Marte|Júpiter|Saturno|Urano|Neptuno)/i.test(pw) },
+            { text: "Debe tener más vocales que consonantes.", check: (pw) => (pw.match(/[aeiouáéíóú]/gi) || []).length > (pw.match(/[bcdfghjklmnpqrstvwxyz]/gi) || []).length },
+            { text: "Debe contener el nombre de un Pokémon.", check: (pw) => /(Pikachu|Charizard|Squirtle|Bulbasaur)/i.test(pw) },
+            { text: "Debe terminar en un signo de exclamación.", check: (pw) => pw.endsWith('!') },
+        ];
 
-            // Iniciar cuenta regresiva
-            const countdown = setInterval(() => {
-                count--;
-                countdownElement.innerText = `Apagado en: ${count}`;
-                if (count <= 0) {
-                    clearInterval(countdown);
-                    fakeShutdown();
-                }
-            }, 1000);
-
-            // Simulación de reparación
-            fixButton.addEventListener("click", () => {
-                alert("Error: Reparación fallida.");
+        function updateRules() {
+            rulesContainer.innerHTML = "";
+            rules.forEach(rule => {
+                const ruleElement = document.createElement("p");
+                ruleElement.textContent = rule.text;
+                ruleElement.classList.add(rule.check(passwordInput.value) ? "valid" : "rule");
+                rulesContainer.appendChild(ruleElement);
             });
+        }
 
-            // Simula un apagado falso con pantalla negra
-            function fakeShutdown() {
-                document.body.innerHTML = "";
-                shutdownSound.play();
-                setTimeout(() => {
-                    document.body.style.background = "black";
-                }, 1000);
-            }
-
-            // Desactiva teclas importantes
-            document.addEventListener("keydown", (event) => {
-                event.preventDefault();
-            });
-
-            // Evita clics
-            document.addEventListener("contextmenu", (event) => event.preventDefault());
-        });
+        passwordInput.addEventListener("input", updateRules);
+        updateRules();
     </script>
 </body>
 </html>
-
