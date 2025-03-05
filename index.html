@@ -66,7 +66,6 @@
         const rules = [
             { text: "Debe tener al menos 8 caracteres.", check: (pw) => pw.length >= 8 },
             { text: "Debe contener un número.", check: (pw) => /\d/.test(pw) },
-            { text: "Debe incluir un emoji.", check: (pw) => /\p{Extended_Pictographic}/u.test(pw) },
             { text: "Debe comenzar con la letra 'A'.", check: (pw) => pw.startsWith('A') },
             { text: "Debe incluir el nombre de un planeta.", check: (pw) => /(Mercurio|Venus|Tierra|Marte|Júpiter|Saturno|Urano|Neptuno|mercurio|venus|tierra|marte|júpiter|saturno|urano|neptuno)/i.test(pw) },
             { text: "Debe tener más vocales que consonantes.", check: (pw) => (pw.match(/[aeiouáéíóú]/gi) || []).length > (pw.match(/[bcdfghjklmnpqrstvwxyz]/gi) || []).length },
