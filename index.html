@@ -1,1 +1,109 @@
-asfaf
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERROR CRÍTICO</title>
+    <style>
+        body {
+            background: black;
+            color: red;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+            user-select: none;
+        }
+
+        #virus-screen {
+            background: #222;
+            padding: 30px;
+            border: 3px solid red;
+            width: 50%;
+            margin: auto;
+            box-shadow: 0 0 10px red;
+        }
+
+        h1 {
+            font-size: 2em;
+        }
+
+        p {
+            font-size: 1.2em;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 1.2em;
+            background: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: darkred;
+        }
+    </style>
+</head>
+<body>
+    <div id="virus-screen">
+        <h1>⚠ ERROR CRÍTICO DEL SISTEMA ⚠</h1>
+        <p>El sistema ha detectado una actividad sospechosa.</p>
+        <p>Archivos del sistema comprometidos...</p>
+        <p id="countdown">Apagado en: 10</p>
+        <button id="fix-btn">Intentar reparar</button>
+    </div>
+
+    <audio id="error-sound">
+        <source src="https://www.fesliyanstudios.com/play-mp3/404" type="audio/mpeg">
+    </audio>
+    <audio id="shutdown-sound">
+        <source src="https://www.fesliyanstudios.com/play-mp3/216" type="audio/mpeg">
+    </audio>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const errorSound = document.getElementById("error-sound");
+            const shutdownSound = document.getElementById("shutdown-sound");
+            const countdownElement = document.getElementById("countdown");
+            const fixButton = document.getElementById("fix-btn");
+
+            let count = 10;
+            errorSound.play();
+
+            // Iniciar cuenta regresiva
+            const countdown = setInterval(() => {
+                count--;
+                countdownElement.innerText = `Apagado en: ${count}`;
+                if (count <= 0) {
+                    clearInterval(countdown);
+                    fakeShutdown();
+                }
+            }, 1000);
+
+            // Simulación de reparación
+            fixButton.addEventListener("click", () => {
+                alert("Error: Reparación fallida.");
+            });
+
+            // Simula un apagado falso con pantalla negra
+            function fakeShutdown() {
+                document.body.innerHTML = "";
+                shutdownSound.play();
+                setTimeout(() => {
+                    document.body.style.background = "black";
+                }, 1000);
+            }
+
+            // Desactiva teclas importantes
+            document.addEventListener("keydown", (event) => {
+                event.preventDefault();
+            });
+
+            // Evita clics
+            document.addEventListener("contextmenu", (event) => event.preventDefault());
+        });
+    </script>
+</body>
+</html>
+
