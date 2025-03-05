@@ -6,32 +6,58 @@
     <title>Juego de la Contraseña</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             text-align: center;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
             margin: 50px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            width: 60%;
+            margin: auto;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
         }
         input {
             padding: 10px;
             font-size: 16px;
+            width: 80%;
+            border: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            text-align: center;
         }
         .rules {
             text-align: left;
             max-width: 500px;
             margin: auto;
+            padding: 10px;
         }
         .rule {
-            color: red;
+            color: #ff4c4c;
+            background: rgba(255, 0, 0, 0.2);
+            padding: 8px;
+            border-radius: 5px;
+            margin: 5px 0;
         }
         .valid {
-            color: green;
+            color: #4cff4c;
+            background: rgba(0, 255, 0, 0.2);
+            padding: 8px;
+            border-radius: 5px;
+            margin: 5px 0;
         }
     </style>
 </head>
 <body>
-    <h1>El Juego de la Contraseña</h1>
-    <p>Introduce una contraseña que cumpla con las reglas absurdas.</p>
-    <input type="text" id="password" placeholder="Escribe tu contraseña">
-    <div class="rules" id="rules"></div>
+    <div class="container">
+        <h1>🔒 El Juego de la Contraseña 🔒</h1>
+        <p>Introduce una contraseña que cumpla con las reglas absurdas.</p>
+        <input type="text" id="password" placeholder="Escribe tu contraseña">
+        <div class="rules" id="rules"></div>
+    </div>
 
     <script>
         const passwordInput = document.getElementById("password");
@@ -50,12 +76,24 @@
 
         function updateRules() {
             rulesContainer.innerHTML = "";
-            rules.forEach(rule => {
+            let allPassed = true;
+            
+            for (let i = 0; i < rules.length; i++) {
+                if (!allPassed) break;
+                
+                const rule = rules[i];
                 const ruleElement = document.createElement("p");
                 ruleElement.textContent = rule.text;
-                ruleElement.classList.add(rule.check(passwordInput.value) ? "valid" : "rule");
+                
+                if (rule.check(passwordInput.value)) {
+                    ruleElement.classList.add("valid");
+                } else {
+                    ruleElement.classList.add("rule");
+                    allPassed = false;
+                }
+                
                 rulesContainer.appendChild(ruleElement);
-            });
+            }
         }
 
         passwordInput.addEventListener("input", updateRules);
