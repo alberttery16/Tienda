@@ -11,6 +11,7 @@
             background: linear-gradient(135deg, #1e3c72, #2a5298);
             color: white;
             margin: 50px;
+            transition: background 0.5s;
         }
         .container {
             background: rgba(255, 255, 255, 0.1);
@@ -49,6 +50,17 @@
             border-radius: 5px;
             margin: 5px 0;
         }
+        .celebration {
+            display: none;
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
     </style>
 </head>
 <body>
@@ -57,11 +69,13 @@
         <p>Introduce una contraseña que cumpla con las reglas absurdas.</p>
         <input type="text" id="password" placeholder="Escribe tu contraseña">
         <div class="rules" id="rules"></div>
+        <div class="celebration" id="celebration">🎉 ¡Contraseña correcta! 🎉</div>
     </div>
 
     <script>
         const passwordInput = document.getElementById("password");
         const rulesContainer = document.getElementById("rules");
+        const celebration = document.getElementById("celebration");
 
         const rules = [
             { text: "Debe tener al menos 8 caracteres.", check: (pw) => pw.length >= 8 },
@@ -78,10 +92,7 @@
             rulesContainer.innerHTML = "";
             let allPassed = true;
             
-            for (let i = 0; i < rules.length; i++) {
-                if (!allPassed) break;
-                
-                const rule = rules[i];
+            for (const rule of rules) {
                 const ruleElement = document.createElement("p");
                 ruleElement.textContent = rule.text;
                 
@@ -93,6 +104,17 @@
                 }
                 
                 rulesContainer.appendChild(ruleElement);
+            }
+            
+            if (allPassed) {
+                celebration.style.display = "block";
+                document.body.style.background = "linear-gradient(135deg, #28a745, #2ecc71)";
+                setTimeout(() => {
+                    document.body.style.background = "linear-gradient(135deg, #1e3c72, #2a5298)";
+                    celebration.style.display = "none";
+                }, 3000);
+            } else {
+                celebration.style.display = "none";
             }
         }
 
