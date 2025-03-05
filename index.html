@@ -84,6 +84,7 @@
             { text: "Debe incluir el nombre de un planeta.", check: (pw) => /(Mercurio|Venus|Tierra|Marte|Júpiter|Saturno|Urano|Neptuno|mercurio|venus|tierra|marte|júpiter|saturno|urano|neptuno)/i.test(pw) },
             { text: "Debe tener más vocales que consonantes.", check: (pw) => (pw.match(/[aeiouáéíóú]/gi) || []).length > (pw.match(/[bcdfghjklmnpqrstvwxyz]/gi) || []).length },
             { text: "Debe contener la letra 'e' exactamente 7 veces.", check: (pw) => (pw.match(/e/gi) || []).length === 7 },
+            { text: "Debe ser un palíndromo.", check: (pw) => pw === pw.split('').reverse().join('') },
             { text: "Debe tener una letra que aparezca exactamente 4 veces.", check: (pw) => [...new Set(pw)].some(c => (pw.match(new RegExp(c, "g")) || []).length === 4) },
             { text: "Debe contener la fecha actual en cualquier formato.", check: (pw) => new RegExp(new Date().toISOString().slice(0, 10).replace(/-/g, '|')).test(pw) }
         ];
@@ -92,7 +93,10 @@
             rulesContainer.innerHTML = "";
             let allPassed = true;
             
-            for (const rule of rules) {
+            for (let i = 0; i < rules.length; i++) {
+                if (i > 0 && !rules[i - 1].check(passwordInput.value)) break;
+                
+                const rule = rules[i];
                 const ruleElement = document.createElement("p");
                 ruleElement.textContent = rule.text;
                 
@@ -106,7 +110,7 @@
                 rulesContainer.appendChild(ruleElement);
             }
             
-            if (allPassed) {
+            if (allPassed && rules.length > 0) {
                 celebration.style.display = "block";
                 document.body.style.background = "linear-gradient(135deg, #28a745, #2ecc71)";
                 setTimeout(() => {
