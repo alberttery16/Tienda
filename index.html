@@ -36,13 +36,16 @@
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
-        const player = { x: 380, y: 550, width: 40, height: 40, speed: 30, shieldActive: false, shieldDuration: 0 };
+        const player = { x: 380, y: 550, width: 40, height: 40, speed: 15, shieldActive: false, shieldDuration: 0 };
         let obstacles = [];
         let coins = 0;
         let score = 0;
         let gameOver = false;
         let fallingObjects = [];
-        
+
+        // Velocidades iniciales más lentas
+        const initialFallingSpeed = 2;  // Caída más lenta de los objetos
+
         // Actualización de la UI
         function updateUI() {
             document.getElementById("coinCount").textContent = coins;
@@ -65,7 +68,7 @@
         function createFallingObject() {
             const objectType = Math.random() < 0.8 ? "coin" : (Math.random() < 0.5 ? "speed" : "obstacle");
             const x = Math.random() * (canvas.width - 40);
-            const speed = objectType === "coin" ? 3 : objectType === "speed" ? 4 : 5;
+            const speed = objectType === "coin" ? initialFallingSpeed : (objectType === "speed" ? initialFallingSpeed : initialFallingSpeed + 1);  // Hacer caer los obstáculos un poco más rápido
             const value = objectType === "coin" ? 10 : objectType === "speed" ? 0 : -1;
 
             fallingObjects.push({ x, y: 0, width: 40, height: 40, type: objectType, speed, value });
@@ -151,7 +154,7 @@
         }
 
         // Configurar los intervalos
-        setInterval(createFallingObject, 1000);
+        setInterval(createFallingObject, 1500); // Los objetos caen más lento (cada 1.5 segundos)
         setInterval(improveSkill, 5000); // Mejorar habilidad cada 5 segundos si hay suficientes monedas
         gameLoop();
 
