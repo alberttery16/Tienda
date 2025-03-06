@@ -19,6 +19,18 @@
             margin-top: 20px;
             font-size: 18px;
         }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #888;
+        }
     </style>
 </head>
 <body>
@@ -31,6 +43,9 @@
         <p>Velocidad: <span id="speedLevel">15</span></p>
         <p>Escudo: <span id="shieldStatus">Desactivado</span></p>
     </div>
+
+    <button id="speedUpgradeButton" disabled>Mejorar Velocidad (100 monedas)</button>
+    <button id="shieldButton" disabled>Activar Escudo (500 monedas)</button>
 
     <script>
         const canvas = document.getElementById("gameCanvas");
@@ -51,6 +66,10 @@
             document.getElementById("coinCount").textContent = coins;
             document.getElementById("speedLevel").textContent = player.speed;
             document.getElementById("shieldStatus").textContent = player.shieldActive ? "Activado" : "Desactivado";
+
+            // Habilitar/Deshabilitar botones según las monedas
+            document.getElementById("speedUpgradeButton").disabled = coins < 100;
+            document.getElementById("shieldButton").disabled = coins < 500;
         }
 
         // Dibujar jugador
@@ -64,12 +83,18 @@
             }
         }
 
-        // Crear objetos que caen (monedas, potenciadores, obstáculos)
+        // Crear objetos que caen (monedas, potenciadores, obstáculos, objeto rosa)
         function createFallingObject() {
-            const objectType = Math.random() < 0.8 ? "coin" : (Math.random() < 0.5 ? "speed" : "obstacle");
+            const objectType = Math.random() < 0.8 ? "coin" : 
+                               (Math.random() < 0.5 ? "speed" : 
+                               (player.speed >= 30 ? "pink" : "obstacle"));
             const x = Math.random() * (canvas.width - 40);
-            const speed = objectType === "coin" ? initialFallingSpeed : (objectType === "speed" ? initialFallingSpeed : initialFallingSpeed + 1);  // Hacer caer los obstáculos un poco más rápido
-            const value = objectType === "coin" ? 10 : objectType === "speed" ? 0 : -1;
+            const speed = objectType === "coin" ? initialFallingSpeed :
+                          (objectType === "speed" ? initialFallingSpeed : 
+                          (objectType === "pink" ? initialFallingSpeed + 1.5 : initialFallingSpeed + 1)); // Hacer caer el rosa más rápido
+            const value = objectType === "coin" ? 10 : 
+                          (objectType === "speed" ? 0 : 
+                          (objectType === "pink" ? 50 : -1)); // El objeto rosa da 50 monedas
 
             fallingObjects.push({ x, y: 0, width: 40, height: 40, type: objectType, speed, value });
         }
@@ -87,6 +112,8 @@
                     ctx.fillStyle = "gold";
                 } else if (object.type === "speed") {
                     ctx.fillStyle = "green";
+                } else if (object.type === "pink") {
+                    ctx.fillStyle = "pink";
                 } else if (object.type === "obstacle") {
                     ctx.fillStyle = "red";
                 }
@@ -107,6 +134,8 @@
                         coins += 10;
                     } else if (object.type === "speed") {
                         player.speed += 1;
+                    } else if (object.type === "pink") {
+                        coins += 50; // El objeto rosa da 50 monedas
                     } else if (object.type === "obstacle" && !player.shieldActive) {
                         gameOver = true;
                     }
@@ -144,18 +173,30 @@
             }
         });
 
-        // Función para mejorar habilidades del jugador
-        function improveSkill() {
+        // Función para mejorar habilidades del jugador (Velocidad)
+        document.getElementById("speedUpgradeButton").addEventListener("click", () => {
             if (coins >= 100) {
-                player.speed += 1;
+                player.speed += 5;
                 coins -= 100;
                 updateUI();
             }
-        }
+        });
+
+        // Función para activar escudo
+        document.getElementById("shieldButton").addEventListener("click", () => {
+            if (coins >= 500) {
+                player.shieldActive = true;
+                coins -= 500;
+                updateUI();
+                setTimeout(() => {
+                    player.shieldActive = false;
+                    updateUI();
+                }, 5000); // El escudo dura 5 segundos
+            }
+        });
 
         // Configurar los intervalos
         setInterval(createFallingObject, 1500); // Los objetos caen más lento (cada 1.5 segundos)
-        setInterval(improveSkill, 5000); // Mejorar habilidad cada 5 segundos si hay suficientes monedas
         gameLoop();
 
     </script>
