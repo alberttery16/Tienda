@@ -58,10 +58,67 @@
         let gameOver = false;
         let fallingObjects = [];
         let newEnemySpeed = 0;
+<!DOCTYPE html> 
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Esquivar</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: white;
+        }
+        canvas {
+            background-color: black;
+            border: 2px solid white;
+        }
+        .info {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #888;
+        }
+    </style>
+</head>
+<body>
+    <h1>Juego de Esquivar</h1>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <p>Usa las flechas izquierda y derecha para mover el jugador.</p>
+    
+    <div class="info">
+        <p>Monedas: <span id="coinCount">0</span></p>
+        <p>Velocidad: <span id="speedLevel">15</span></p>
+        <p>Escudo: <span id="shieldStatus">Desactivado</span></p>
+    </div>
 
-        // Velocidades iniciales más lentas
-        const initialFallingSpeed = 2;  // Caída más lenta de los objetos
-        const newEnemySpeed = 4; // Velocidad del nuevo enemigo rosa
+    <button id="speedUpgradeButton" disabled>Mejorar Velocidad (100 monedas)</button>
+    <button id="shieldButton" disabled>Activar Escudo (500 monedas)</button>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const player = { x: 380, y: 550, width: 40, height: 40, speed: 15, shieldActive: false, shieldDuration: 0 };
+        let fallingObjects = [];
+        let coins = 0;
+        let gameOver = false;
+
+        // Velocidades iniciales
+        const initialFallingSpeed = 2;
+        const newEnemySpeed = 4;  // Velocidad de los nuevos enemigos
 
         // Actualización de la UI
         function updateUI() {
@@ -143,7 +200,7 @@
         // Bucle principal del juego
         function gameLoop() {
             if (gameOver) {
-                alert("¡Game Over! Puntuación: " + score);
+                alert("¡Game Over! Puntuación: " + coins);
                 document.location.reload();
                 return;
             }
@@ -154,8 +211,6 @@
             moveFallingObjects();
             checkCollision();
 
-            score++;
-            updateUI();
             requestAnimationFrame(gameLoop);
         }
 
