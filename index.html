@@ -1,4 +1,4 @@
-  <!DOCTYPE html> 
+<!DOCTYPE html> 
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -19,18 +19,6 @@
             margin-top: 20px;
             font-size: 18px;
         }
-        button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #333;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:disabled {
-            background-color: #888;
-        }
     </style>
 </head>
 <body>
@@ -44,27 +32,25 @@
         <p>Escudo: <span id="shieldStatus">Desactivado</span></p>
     </div>
 
-    <button id="speedUpgradeButton" disabled>Mejorar Velocidad (100 monedas)</button>
-    <button id="shieldButton" disabled>Activar Escudo (500 monedas)</button>
-
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
 
-        const player = { x: 380, y: 550, width: 40, height: 40, speed: 15, shieldActive: false };
-        let fallingObjects = [];
+        const player = { x: 380, y: 550, width: 40, height: 40, speed: 15, shieldActive: false, shieldDuration: 0 };
+        let obstacles = [];
         let coins = 0;
+        let score = 0;
         let gameOver = false;
+        let fallingObjects = [];
+
+        // Velocidades iniciales más lentas
+        const initialFallingSpeed = 2;  // Caída más lenta de los objetos
 
         // Actualización de la UI
         function updateUI() {
             document.getElementById("coinCount").textContent = coins;
             document.getElementById("speedLevel").textContent = player.speed;
             document.getElementById("shieldStatus").textContent = player.shieldActive ? "Activado" : "Desactivado";
-
-            // Habilitar/Deshabilitar botones según las monedas
-            document.getElementById("speedUpgradeButton").disabled = coins < 100;
-            document.getElementById("shieldButton").disabled = coins < 500;
         }
 
         // Dibujar jugador
@@ -78,12 +64,12 @@
             }
         }
 
-        // Crear objetos que caen (monedas, obstáculos)
+        // Crear objetos que caen (monedas, potenciadores, obstáculos)
         function createFallingObject() {
-            const objectType = Math.random() < 0.7 ? "coin" : "obstacle"; // Solo monedas u obstáculos para simplificar
+            const objectType = Math.random() < 0.8 ? "coin" : (Math.random() < 0.5 ? "speed" : "obstacle");
             const x = Math.random() * (canvas.width - 40);
-            const speed = Math.random() * 2 + 2; // Velocidad aleatoria de caída
-            const value = objectType === "coin" ? 10 : -1;
+            const speed = objectType === "coin" ? initialFallingSpeed : (objectType === "speed" ? initialFallingSpeed : initialFallingSpeed + 1);  // Hacer caer los obstáculos un poco más rápido
+            const value = objectType === "coin" ? 10 : objectType === "speed" ? 0 : -1;
 
             fallingObjects.push({ x, y: 0, width: 40, height: 40, type: objectType, speed, value });
         }
@@ -91,7 +77,7 @@
         // Mover los objetos que caen
         function moveFallingObjects() {
             fallingObjects.forEach(object => object.y += object.speed);
-            fallingObjects = fallingObjects.filter(object => object.y < canvas.height); // Eliminar objetos fuera de pantalla
+            fallingObjects = fallingObjects.filter(object => object.y < canvas.height);
         }
 
         // Dibujar los objetos que caen
@@ -99,6 +85,8 @@
             fallingObjects.forEach(object => {
                 if (object.type === "coin") {
                     ctx.fillStyle = "gold";
+                } else if (object.type === "speed") {
+                    ctx.fillStyle = "green";
                 } else if (object.type === "obstacle") {
                     ctx.fillStyle = "red";
                 }
@@ -117,10 +105,12 @@
                 ) {
                     if (object.type === "coin") {
                         coins += 10;
+                    } else if (object.type === "speed") {
+                        player.speed += 1;
                     } else if (object.type === "obstacle" && !player.shieldActive) {
                         gameOver = true;
                     }
-                    fallingObjects = fallingObjects.filter(f => f !== object); // Eliminar objeto caído
+                    fallingObjects = fallingObjects.filter(f => f !== object);
                 }
             });
         }
@@ -128,8 +118,8 @@
         // Bucle principal del juego
         function gameLoop() {
             if (gameOver) {
-                alert("¡Game Over! Puntuación: " + coins);
-                document.location.reload(); // Recargar la página para reiniciar el juego
+                alert("¡Game Over! Puntuación: " + score);
+                document.location.reload();
                 return;
             }
 
@@ -139,6 +129,8 @@
             moveFallingObjects();
             checkCollision();
 
+            score++;
+            updateUI();
             requestAnimationFrame(gameLoop);
         }
 
@@ -152,31 +144,20 @@
             }
         });
 
-        // Función para mejorar velocidad del jugador
-        document.getElementById("speedUpgradeButton").addEventListener("click", () => {
+        // Función para mejorar habilidades del jugador
+        function improveSkill() {
             if (coins >= 100) {
-                player.speed += 5;
+                player.speed += 1;
                 coins -= 100;
                 updateUI();
             }
-        });
+        }
 
-        // Función para activar escudo
-        document.getElementById("shieldButton").addEventListener("click", () => {
-            if (coins >= 500) {
-                player.shieldActive = true;
-                coins -= 500;
-                updateUI();
-                setTimeout(() => {
-                    player.shieldActive = false;
-                    updateUI();
-                }, 5000); // El escudo dura 5 segundos
-            }
-        });
+        // Configurar los intervalos
+        setInterval(createFallingObject, 1500); // Los objetos caen más lento (cada 1.5 segundos)
+        setInterval(improveSkill, 5000); // Mejorar habilidad cada 5 segundos si hay suficientes monedas
+        gameLoop();
 
-        // Crear objetos cada 1 segundo
-        setInterval(createFallingObject, 1000);
-        gameLoop(); // Iniciar el bucle principal del juego
     </script>
 </body>
 </html>
