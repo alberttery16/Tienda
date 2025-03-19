@@ -1,20 +1,49 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deslizar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .slider {
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            position: relative;
+        }
+        .slides {
+            display: flex;
+            width: 300%;
+            animation: slide 9s infinite;
+        }
+        .slide {
+            width: 100%;
+            flex: 1;
+        }
+        .slide img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        @keyframes slide {
+            0% { transform: translateX(0%); }
+            33% { transform: translateX(-100%); }
+            66% { transform: translateX(-200%); }
+            100% { transform: translateX(0%); }
+        }
+    </style>
 </head>
 <body>
     <div class="slider">
-        <div class="slide">
-            <img src="1.jpg">
-        </div>
-        <div class="slide">
-            <img src="2.jpg">
-        </div>
-        <div class="slide">
-            <img src="3.jpg">
+        <div class="slides">
+            <div class="slide"><img src="1.jpg" alt="Imagen 1"></div>
+            <div class="slide"><img src="2.jpg" alt="Imagen 2"></div>
+            <div class="slide"><img src="3.jpg" alt="Imagen 3"></div>
         </div>
     </div>
 </body>
